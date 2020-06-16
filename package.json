@@ -1,0 +1,22 @@
+{
+  "name": "edd-bnjs-n-79",
+  "version": "0.0.1",
+  "description": "Bases con Node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smessina/EDD-BNJS-N-79.git"
+  },
+  "author": "smessina",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/smessina/EDD-BNJS-N-79/issues"
+  },
+  "homepage": "https://github.com/smessina/EDD-BNJS-N-79#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
