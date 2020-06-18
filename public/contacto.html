@@ -48,10 +48,15 @@
 
 				fetch(evento.target.action, {
 					method : evento.target.method,
-					body : datos
+					body : datos,
+					headers : {
+                        "Content-Type" : "application/x-www-form-urlencoded"
+                    },
 				}).then( rta => rta.json() ).then( data => {
 					if( data.rta == "ok" ){
 						alert("ENVIO EXITOSO!")
+					} else {
+						alert("FALLO EL ENVIO :(")
 					}
 				})
 			})
