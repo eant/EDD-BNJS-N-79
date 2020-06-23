@@ -23,11 +23,11 @@ const schemaContact = joi.object({
 
 //1) Crear la conexion con el Servidor de Email
 const miniOutlook = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
     auth: {
-        user: 'myrtie.kuhn@ethereal.email',
-        pass: 'vNu6QkbzTXMYXHhspF'
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     }
 })
 
@@ -59,9 +59,16 @@ server.post('/enviar', function (request, response) {
         
         miniOutlook.sendMail({
             from : datos.correo,
-            to : "silvio.messina@eant.tech",
+            to : "smessina5@gmail.com",
+            replyTo :  datos.correo,
             subject : "Consulta desde NodEANT",
-            html : "<h1>Hola viteh!</h1>"
+            html : `
+                <p style="color:grey">Datos del contacto:</p>
+                <p>Nombre: ${datos.nombre}</p>
+                <p>Email: ${datos.correo}</p>
+                <p>Mensaje:</p>
+                <blockquote>${datos.mensaje}</blockquote>
+                `
         }, function(error, info){
             const rta = error ? "Su consulta no pudo ser enviada" : "Gracias por su consulta :D"
             
