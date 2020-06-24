@@ -2,9 +2,9 @@
   "name": "edd-bnjs-n-79",
   "version": "0.0.1",
   "description": "Bases con Node.js",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "source .env && nodemon index.js"
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",
