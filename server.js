@@ -6,6 +6,8 @@ const json = express.json()
 
 const DB = []
 
+console.log( DB )
+
 server.use( json )
 server.use( urlencoded )
 server.listen(3000)
@@ -15,15 +17,29 @@ server.get("/api", (req, res) => { //<-- Obtener los datos
 })
 
 server.post("/api", (req, res) => { //<-- Crear con datos
-    const datos = req.body
+    /*
+        Requisitos del ID:
+        - Unico
+        - Irrepetible
+        - Autoasignable
+    */
+    const datos = req.body //<--- { nombre: "Cafe", stock: "700", precio: "85.75", disponible: "true" }
+    const id = new Date().getTime()
 
-    DB.push( datos )
+    // ...datos //<-- let nombre = "Cafe"; let stock = "700"; etc...
+    DB.push({ id, ...datos }) //<--- { id: 123456789, nombre: "Cafe", stock: "700", precio: "85.75", disponible: "true" }
 
+    console.log( DB )
     res.json({ rta : "ok" })  
 })
 
 server.put("/api", (req, res) => { //<-- Actualizar con datos
-    res.json({ rta : "Acá vas a actualizar productos" })
+    const datos = req.body
+
+    const encontrado = DB.find(item => item.id == datos.id)
+    encontrado.stock = datos.stock
+
+    res.json({ rta : "ok" })
 })
 
 server.delete("/api", (req, res) => { //<-- Eliminar los datos
