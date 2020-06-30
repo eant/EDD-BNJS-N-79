@@ -7,22 +7,28 @@ const json = express.json()
 
 const url = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASS}@${process.env.MONGODB_HOST}/${process.env.MONGODB_BASE}?retryWrites=true&w=majority`
 
+const connectDB = async () => {
+
+    const client = await MongoClient.connect(url, { useUnifiedTopology : true })
+
+    DB = await client.db("MercadoTECH")
+
+}
+
 let DB = null
 
-MongoClient.connect(url, { useUnifiedTopology: true }, function(error, client) {
-    
-    DB = client.db("MercadoTECH")
-    
-})
-
+connectDB()
 
 server.use( json )
 server.use( urlencoded )
 server.listen(3000)
 
-server.get("/api", (req, res) => { //<-- Obtener los datos
-    console.log( DB.collection('Productos').find({}).toArray() )
-    res.json( DB.collection('Productos').find({}).toArray() )
+server.get("/api", async (req, res) => { //<-- Obtener los datos
+
+    const productos = await DB.collection('Productos')
+    const resultado = await productos.find({}).toArray()
+    
+    res.json( resultado )
 })
 
 server.post("/api", (req, res) => { //<-- Crear con datos
