@@ -31,7 +31,11 @@ server.get("/api", async (req, res) => { //<-- Obtener los datos
     res.json( resultado )
 })
 
-server.post("/api", (req, res) => { //<-- Crear con datos
+server.get("/api/:id", (req, res) => {
+    res.end(`El producto a buscar por :id es: ${req.params.id}`)
+})
+
+server.post("/api", async (req, res) => { //<-- Crear con datos
     /*
         Requisitos del ID:
         - Unico
@@ -39,13 +43,11 @@ server.post("/api", (req, res) => { //<-- Crear con datos
         - Autoasignable
     */
     const datos = req.body //<--- { nombre: "Cafe", stock: "700", precio: "85.75", disponible: "true" }
-    const id = new Date().getTime()
+    const productos = await DB.collection("Productos")
 
-    // ...datos //<-- let nombre = "Cafe"; let stock = "700"; etc...
-    DB.push({ id, ...datos }) //<--- { id: 123456789, nombre: "Cafe", stock: "700", precio: "85.75", disponible: "true" }
+    const { result } = await productos.insertOne( datos )
 
-    console.log( DB )
-    res.json({ rta : "ok" })  
+    res.json({ rta : result.ok })  
 })
 
 server.put("/api", (req, res) => { //<-- Actualizar con datos
