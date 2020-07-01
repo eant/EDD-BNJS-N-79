@@ -59,13 +59,22 @@ server.post("/api", async (req, res) => { //<-- Crear con datos
     res.json({ rta : result.ok })  
 })
 
-server.put("/api", (req, res) => { //<-- Actualizar con datos
+server.put("/api/:id", async (req, res) => { //<-- Actualizar con datos
+    
+    const ID = req.params.id
     const datos = req.body
 
-    const encontrado = DB.find(item => item.id == datos.id)
-    encontrado.stock = datos.stock
+    const productos = await DB.collection("Productos")
 
-    res.json({ rta : "ok" })
+    const query = { "_id" : ObjectId( ID ) }
+    
+    const update = {
+        $set : { ...datos }
+    }
+
+    const { result } = await productos.updateOne( query, update )
+
+    res.json({ rta : result.ok })
 })
 
 server.delete("/api", (req, res) => { //<-- Eliminar los datos
