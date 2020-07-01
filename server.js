@@ -1,5 +1,6 @@
 const express = require('express')
 const { MongoClient } = require('mongodb')
+const { ObjectId } = require('mongodb')
 const server = express()
 
 const urlencoded = express.urlencoded({ extended : true })
@@ -31,8 +32,16 @@ server.get("/api", async (req, res) => { //<-- Obtener los datos
     res.json( resultado )
 })
 
-server.get("/api/:id", (req, res) => {
-    res.end(`El producto a buscar por :id es: ${req.params.id}`)
+server.get("/api/:id", async (req, res) => {
+    const productos = await DB.collection('Productos')
+    
+    const ID = req.params.id
+
+    const query = { "_id" : ObjectId(ID) }
+    
+    const resultado = await productos.find( query ).toArray()
+
+    res.json( resultado )
 })
 
 server.post("/api", async (req, res) => { //<-- Crear con datos
