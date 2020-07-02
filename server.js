@@ -5,6 +5,7 @@ const server = express()
 
 const urlencoded = express.urlencoded({ extended : true })
 const json = express.json()
+const public = express.static("public")
 
 const url = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASS}@${process.env.MONGODB_HOST}/${process.env.MONGODB_BASE}?retryWrites=true&w=majority`
 
@@ -22,6 +23,7 @@ connectDB()
 
 server.use( json )
 server.use( urlencoded )
+server.use("/admin", public )
 server.listen(3000)
 
 server.get("/api", async (req, res) => { //<-- Obtener los datos
