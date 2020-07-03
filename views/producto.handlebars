@@ -1,0 +1,57 @@
+<h1>{{ACCION}} Producto</h1>
+<form action="http://localhost:3000/api" method="post">
+
+	<label for="nombre">Ingrese nombre:</label>
+	<input class="form-control" type="text" name="nombre" placeholder="Ej: Jugo de Uva">
+	
+	<br>
+
+	<label for="stock">Ingrese Stock:</label>
+	<input class="form-control" type="number" name="stock" placeholder="Ej: 9999">
+
+	<br>
+
+	<label for="precio">Ingrese Precio:</label>
+	<input class="form-control" type="number" name="precio" placeholder="Ej: 1999.99">
+
+	<br>
+
+	<label for="marca">Elija una marca:</label>
+	<select class="form-control" name="marca">
+		<option value="apple">Apple</option>
+		<option value="samsung">Samsung</option>
+		<option value="google">Google</option>
+		<option value="lg">LG</option>
+	</select>
+
+	<br>
+
+	<label for="detalle">Ingrese un detalle:</label>
+	<textarea class="form-control" name="detalle" cols="30" rows="10" placeholder="Max: 100 caracteres"></textarea>
+
+	<br>
+
+	<input class="btn btn-primary" type="submit" value="Agregar">
+
+</form>
+<script>		
+	document.querySelector("form").addEventListener("submit", async function(evento){
+		evento.preventDefault()
+
+		const datos = Object.fromEntries( new FormData(evento.target) ) //<-- Pasar de Form a Object
+
+		const configs = {
+			method : evento.target.method,
+			body : JSON.stringify(datos), //<-- Pasar de Object a JSON
+			headers : {
+				"Content-Type" : "application/json"
+			}
+		}
+
+		const request = await fetch(evento.target.action, configs)
+		const data = await request.json()
+		const message = data.rta ? "Producto agregado correctamente :D" : "El producto no pudo agregarse :("
+
+		alert( message )
+	})
+</script>

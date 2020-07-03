@@ -34,8 +34,15 @@ server.listen(3000)
 
 // Inicio Rutas del Dashboard //
 server.get("/admin", (req, res) => {
+
+    const productos = [{"_id":"5efe6b67ddcebc3710f2dbf6","nombre":"iPhone X","stock":"500","precio":"699","marca":"apple","detalle":"Modelo A6253EQ - 64GB - LTE - WiFi 802.11n"},{"_id":"5efe6c86ddcebc3710f2dbf7","nombre":"Galaxy S11","stock":"850","precio":"799","marca":"samsung","detalle":"Modelo SMSG58 JQ - 5G/COVID-19 - WiFi 801.12x"}]
     
-    res.render("agregar", { layout : false })
+    res.render("listado", { productos })
+
+})
+server.get("/admin/contacto", (req, res) => {
+    
+    res.render("contacto", { ACCION : "Contacto" })
 
 })
 // Fin de Rutas del Dashboard //
