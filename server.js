@@ -1,11 +1,12 @@
 const express = require('express')
+const hbs = require('express-handlebars')
 const { MongoClient } = require('mongodb')
 const { ObjectId } = require('mongodb')
 const server = express()
 
 const urlencoded = express.urlencoded({ extended : true })
 const json = express.json()
-const public = express.static("public")
+const public = express.static(__dirname + "/public")
 
 const url = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASS}@${process.env.MONGODB_HOST}/${process.env.MONGODB_BASE}?retryWrites=true&w=majority`
 
@@ -23,8 +24,21 @@ connectDB()
 
 server.use( json )
 server.use( urlencoded )
-server.use("/admin", public )
+
+server.set("view engine", "handlebars")
+server.engine("handlebars", hbs() )
+
+server.use("/", public )
 server.listen(3000)
+
+
+// Inicio Rutas del Dashboard //
+server.get("/admin", (req, res) => {
+    
+    res.render("agregar", { layout : false })
+
+})
+// Fin de Rutas del Dashboard //
 
 server.get("/api", async (req, res) => { //<-- Obtener los datos
 
