@@ -14,13 +14,11 @@ const connectDB = async () => {
 
     const client = await MongoClient.connect(url, { useUnifiedTopology : true })
 
-    DB = await client.db("MercadoTECH")
+    return await client.db("MercadoTECH")
 
 }
 
-let DB = null
-
-connectDB()
+const port = process.env.PORT || 3000
 
 server.use( json )
 server.use( urlencoded )
@@ -29,26 +27,30 @@ server.set("view engine", "handlebars")
 server.engine("handlebars", hbs() )
 
 server.use("/", public )
-server.listen(3000)
+server.listen(port)
 
 
 // Inicio Rutas del Dashboard //
-server.get("/admin", (req, res) => {
+server.get("/admin", async (req, res) => {
+    const DB = await connectDB()
 
-    const productos = [{"_id":"5efe6b67ddcebc3710f2dbf6","nombre":"iPhone X","stock":"500","precio":"699","marca":"apple","detalle":"Modelo A6253EQ - 64GB - LTE - WiFi 802.11n"},{"_id":"5efe6c86ddcebc3710f2dbf7","nombre":"Galaxy S11","stock":"850","precio":"799","marca":"samsung","detalle":"Modelo SMSG58 JQ - 5G/COVID-19 - WiFi 801.12x"}]
-    
-    res.render("listado", { productos })
+    const productos = await DB.collection('Productos')
+    const resultado = await productos.find({}).toArray()
+
+    res.render("main", {
+        layout : false,
+        url : req.protocol + "://" + req.hostname + ":" + port,
+        items : resultado
+    }) //<-- http://localhost:3000
 
 })
-server.get("/admin/contacto", (req, res) => {
-    
-    res.render("contacto", { ACCION : "Contacto" })
-
+server.get("/admin/editar/:id", async (req, res) => {
+    res.end(`Aca hay que editar el producto: ${req.params.id}`)
 })
 // Fin de Rutas del Dashboard //
 
 server.get("/api", async (req, res) => { //<-- Obtener los datos
-
+    const DB = await connectDB()
     const productos = await DB.collection('Productos')
     const resultado = await productos.find({}).toArray()
     
