@@ -40,10 +40,13 @@ server.get("/admin", async (req, res) => {
 
     res.render("main", {
         layout : false,
-        url : req.protocol + "://" + req.hostname + ":" + port,
+        url : req.protocol + "://" + req.hostname + ":" + port, //<-- http://localhost:3000
         items : resultado
-    }) //<-- http://localhost:3000
+    }) 
 
+})
+server.get("/admin/nuevo", (req, res) => {
+    res.end(`Aca hay que crear un nuevo producto`)
 })
 server.get("/admin/editar/:id", async (req, res) => {
     res.end(`Aca hay que editar el producto: ${req.params.id}`)

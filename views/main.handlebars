@@ -14,7 +14,7 @@
     <h1 class="text-center p-5">MercadoTECH</h1>
     <section class="row">
       <div class="col-sm-8 offset-sm-2">
-        <a href="#" class="btn btn-success float-right my-3">Nuevo Producto</a>
+        <a href="{{url}}/admin/nuevo" class="btn btn-success float-right my-3">Nuevo Producto</a>
         <!-- LISTADO DE PRODUCTOS -->
         <table class="table">
           <thead>
@@ -35,7 +35,7 @@
               <td>{{this.stock}} unid.</td>
               <td>${{this.precio}}</td>
               <td>
-                <a href="{{url}}/admin/editar/{{this._id}}" class="btn btn-primary">ACTUALIZAR</a>
+                <a href="{{../url}}/admin/editar/{{this._id}}" class="btn btn-primary">ACTUALIZAR</a>
                 <button id="#" class="btn btn-danger">ELIMINAR</button>
               </td>
             </tr>
