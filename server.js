@@ -45,11 +45,17 @@ server.get("/admin", async (req, res) => {
     }) 
 
 })
+
 server.get("/admin/nuevo", (req, res) => {
     res.end(`Aca hay que crear un nuevo producto`)
 })
+
 server.get("/admin/editar/:id", async (req, res) => {
     res.end(`Aca hay que editar el producto: ${req.params.id}`)
+})
+
+server.get("/admin/ingresar", (req, res) => {
+    res.render("login", { layout : false })
 })
 // Fin de Rutas del Dashboard //
 
@@ -128,6 +134,7 @@ const verifyToken = (req, res, next) => {
         if(error){
             res.json({ rta : "Acceso no autorizado" })
         } else {
+            // ↓ Acá desencripto el JWT y accedo a los datos...
             req.user = data.usuario
             next()
         }
