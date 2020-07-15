@@ -3,11 +3,13 @@ const hbs = require('express-handlebars')
 const { MongoClient } = require('mongodb')
 const { ObjectId } = require('mongodb')
 const jwt = require("jsonwebtoken")
+const cookieParser = require("cookie-parser")
 const server = express()
 
 const urlencoded = express.urlencoded({ extended : true })
 const json = express.json()
 const public = express.static(__dirname + "/public")
+const cookies = cookieParser()
 
 const url = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASS}@${process.env.MONGODB_HOST}/${process.env.MONGODB_BASE}?retryWrites=true&w=majority`
 
@@ -23,6 +25,7 @@ const port = process.env.PORT || 3000
 
 server.use( json )
 server.use( urlencoded )
+server.use( cookies )
 
 server.set("view engine", "handlebars")
 server.engine("handlebars", hbs() )
@@ -30,9 +33,25 @@ server.engine("handlebars", hbs() )
 server.use("/", public )
 server.listen(port)
 
+const verifyToken = (req, res, next) => {
+    //aca hay que verificar el token...
+    const token = req.cookies._auth
+
+    console.log(token)
+
+    jwt.verify(token, process.env.JWT_PASSPHRASE, (error, data) => {
+        if(error){
+            res.redirect("http://localhost:3000/admin/ingresar")
+        } else {
+            // ↓ Acá desencripto el JWT y accedo a los datos...
+            req.user = data.usuario
+            next()
+        }
+    })
+}
 
 // Inicio Rutas del Dashboard //
-server.get("/admin", async (req, res) => {
+server.get("/admin", verifyToken, async (req, res) => {
     const DB = await connectDB()
 
     const productos = await DB.collection('Productos')
@@ -46,11 +65,14 @@ server.get("/admin", async (req, res) => {
 
 })
 
-server.get("/admin/nuevo", (req, res) => {
-    res.end(`Aca hay que crear un nuevo producto`)
+server.get("/admin/nuevo", verifyToken, (req, res) => {
+    const hansel = req.cookies._auth
+    
+    res.write(`<p>El token de la cookie es: ${hansel}</p>`)
+    res.end(`<p>Aca hay que crear un nuevo producto</p>`)
 })
 
-server.get("/admin/editar/:id", async (req, res) => {
+server.get("/admin/editar/:id", verifyToken, async (req, res) => {
     res.end(`Aca hay que editar el producto: ${req.params.id}`)
 })
 
@@ -58,6 +80,8 @@ server.get("/admin/ingresar", (req, res) => {
     res.render("login", { layout : false })
 })
 // Fin de Rutas del Dashboard //
+
+////////////// API REST //////////////
 
 server.get("/api", async (req, res) => { //<-- Obtener los datos
     const DB = await connectDB()
@@ -123,42 +147,26 @@ server.delete("/api/:id", async (req, res) => { //<-- Eliminar los datos
     
     res.json({ rta : result.ok })
 })
-////////////// JWT Test //////////////
-const verifyToken = (req, res, next) => {
-    //aca hay que verificar el token...
-    const token = req.query.token
 
-    console.log(token)
-
-    jwt.verify(token, process.env.JWT_PASSPHRASE, (error, data) => {
-        if(error){
-            res.json({ rta : "Acceso no autorizado" })
-        } else {
-            // ↓ Acá desencripto el JWT y accedo a los datos...
-            req.user = data.usuario
-            next()
-        }
-    })
-}
-
+////////////// JWT Login //////////////
 
 server.post("/login", (req, res) => {
 
     const datos = req.body
 
     if( datos.email == "pepito@gmail.com" && datos.clave == "HolaDonPepito2020" ){
+
+        const vencimientoTimestamp = Date.now() + (60 * 1000 * 5) //<--- Dentro de 5 minutos
+        const vencimientoFecha = new Date( vencimientoTimestamp ) 
         
         const token = jwt.sign({ usuario : datos.email, expiresIn : 60 }, process.env.JWT_PASSPHRASE)
         
-        res.json({ rta : "Estas logeado", token })
+        res.cookie("_auth", token, { expires : vencimientoFecha, httpOnly : true, sameSite : "Strict", secure : false })
+
+        res.redirect("http://localhost:3000/admin")
 
     } else {
         res.json({ rta : "Datos incorrectos" })
     }
 
-})
-
-server.get("/check", verifyToken, (req, res) => {
-    //Aca voy a decir si el token es valido o no...
-    res.end(`Bienvenido "${req.user}"`)
 })
