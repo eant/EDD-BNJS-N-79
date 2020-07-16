@@ -23,6 +23,8 @@ const connectDB = async () => {
 
 const port = process.env.PORT || 3000
 
+const base_url = req => req.protocol + "://" + req.hostname + ":" + port
+
 server.use( json )
 server.use( urlencoded )
 server.use( cookies )
@@ -41,7 +43,7 @@ const verifyToken = (req, res, next) => {
 
     jwt.verify(token, process.env.JWT_PASSPHRASE, (error, data) => {
         if(error){
-            res.redirect("http://localhost:3000/admin/ingresar")
+            res.redirect( base_url(req) + "/admin/ingresar")
         } else {
             // ↓ Acá desencripto el JWT y accedo a los datos...
             req.user = data.usuario
@@ -59,7 +61,7 @@ server.get("/admin", verifyToken, async (req, res) => {
 
     res.render("main", {
         layout : false,
-        url : req.protocol + "://" + req.hostname + ":" + port, //<-- http://localhost:3000
+        url : base_url(req), //<-- http://localhost:3000
         items : resultado
     }) 
 
@@ -156,14 +158,15 @@ server.post("/login", (req, res) => {
 
     if( datos.email == "pepito@gmail.com" && datos.clave == "HolaDonPepito2020" ){
 
-        const vencimientoTimestamp = Date.now() + (60 * 1000 * 5) //<--- Dentro de 5 minutos
+        const duracion = 5 //<-- Minutos
+        const vencimientoTimestamp = Date.now() + (60 * 1000 * duracion) //<--- Dentro de 5 minutos
         const vencimientoFecha = new Date( vencimientoTimestamp ) 
         
-        const token = jwt.sign({ usuario : datos.email, expiresIn : 60 }, process.env.JWT_PASSPHRASE)
+        const token = jwt.sign({ usuario : datos.email, expiresIn : (duracion * 60) }, process.env.JWT_PASSPHRASE)
         
         res.cookie("_auth", token, { expires : vencimientoFecha, httpOnly : true, sameSite : "Strict", secure : false })
 
-        res.redirect("http://localhost:3000/admin")
+        res.redirect( base_url(req) + "/admin" )
 
     } else {
         res.json({ rta : "Datos incorrectos" })
