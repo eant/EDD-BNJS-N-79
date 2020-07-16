@@ -59,8 +59,7 @@ server.get("/admin", verifyToken, async (req, res) => {
     const productos = await DB.collection('Productos')
     const resultado = await productos.find({}).toArray()
 
-    res.render("main", {
-        layout : false,
+    res.render("panel", {
         url : base_url(req), //<-- http://localhost:3000
         items : resultado
     }) 
@@ -68,18 +67,15 @@ server.get("/admin", verifyToken, async (req, res) => {
 })
 
 server.get("/admin/nuevo", verifyToken, (req, res) => {
-    const hansel = req.cookies._auth
-    
-    res.write(`<p>El token de la cookie es: ${hansel}</p>`)
-    res.end(`<p>Aca hay que crear un nuevo producto</p>`)
+    res.render("formulario")
 })
 
 server.get("/admin/editar/:id", verifyToken, async (req, res) => {
-    res.end(`Aca hay que editar el producto: ${req.params.id}`)
+    res.render("formulario")
 })
 
 server.get("/admin/ingresar", (req, res) => {
-    res.render("login", { layout : false })
+    res.render("login")
 })
 // Fin de Rutas del Dashboard //
 
@@ -156,7 +152,7 @@ server.post("/login", (req, res) => {
 
     const datos = req.body
 
-    if( datos.email == "pepito@gmail.com" && datos.clave == "HolaDonPepito2020" ){
+    if( datos.email == "pepito@gmail.com" && datos.clave == "pepito" ){
 
         const duracion = 5 //<-- Minutos
         const vencimientoTimestamp = Date.now() + (60 * 1000 * duracion) //<--- Dentro de 5 minutos
