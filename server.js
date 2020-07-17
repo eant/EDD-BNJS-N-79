@@ -39,8 +39,6 @@ const verifyToken = (req, res, next) => {
     //aca hay que verificar el token...
     const token = req.cookies._auth
 
-    console.log(token)
-
     jwt.verify(token, process.env.JWT_PASSPHRASE, (error, data) => {
         if(error){
             res.redirect( base_url(req) + "/admin/ingresar")
@@ -67,15 +65,31 @@ server.get("/admin", verifyToken, async (req, res) => {
 })
 
 server.get("/admin/nuevo", verifyToken, (req, res) => {
-    res.render("formulario")
+    res.render("formulario", {
+        url : base_url(req),
+        accion : "Nuevo",
+        metodo : "POST"
+    })
 })
 
 server.get("/admin/editar/:id", verifyToken, async (req, res) => {
-    res.render("formulario")
+    /* OBTENER EL PRODUCTO A EDITAR */
+    const ID = req.params.id
+    const DB = await connectDB()
+    const productos = await DB.collection('Productos')
+    const query = { "_id" : ObjectId(ID) }
+    const resultado = await productos.find( query ).toArray()
+    //////////////////////////////////
+    res.render("formulario", {
+        url : base_url(req),
+        accion : "Actualizar",
+        metodo : "PUT",
+        ...resultado[0]
+    })
 })
 
 server.get("/admin/ingresar", (req, res) => {
-    res.render("login")
+    res.render("login", { url : base_url(req) })
 })
 // Fin de Rutas del Dashboard //
 
@@ -90,6 +104,7 @@ server.get("/api", async (req, res) => { //<-- Obtener los datos
 })
 
 server.get("/api/:id", async (req, res) => {
+    const DB = await connectDB()
     const productos = await DB.collection('Productos')
     
     const ID = req.params.id
@@ -109,6 +124,7 @@ server.post("/api", async (req, res) => { //<-- Crear con datos
         - Autoasignable
     */
     const datos = req.body //<--- { nombre: "Cafe", stock: "700", precio: "85.75", disponible: "true" }
+    const DB = await connectDB()
     const productos = await DB.collection("Productos")
 
     const { result } = await productos.insertOne( datos )
@@ -120,11 +136,13 @@ server.put("/api/:id", async (req, res) => { //<-- Actualizar con datos
     
     const ID = req.params.id
     const datos = req.body
-
+    const DB = await connectDB()
     const productos = await DB.collection("Productos")
 
     const query = { "_id" : ObjectId( ID ) }
     
+    console.log(datos)
+
     const update = {
         $set : { ...datos }
     }
@@ -136,7 +154,7 @@ server.put("/api/:id", async (req, res) => { //<-- Actualizar con datos
 
 server.delete("/api/:id", async (req, res) => { //<-- Eliminar los datos
     const ID = req.params.id
-
+    const DB = await connectDB()
     const productos = await DB.collection("Productos")
 
     const query = { "_id" : ObjectId(ID) }
@@ -154,7 +172,7 @@ server.post("/login", (req, res) => {
 
     if( datos.email == "pepito@gmail.com" && datos.clave == "pepito" ){
 
-        const duracion = 5 //<-- Minutos
+        const duracion = 15 //<-- Minutos
         const vencimientoTimestamp = Date.now() + (60 * 1000 * duracion) //<--- Dentro de 5 minutos
         const vencimientoFecha = new Date( vencimientoTimestamp ) 
         

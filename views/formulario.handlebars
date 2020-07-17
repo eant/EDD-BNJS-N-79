@@ -1,18 +1,18 @@
-<h1>Nuevo Producto</h1>
-<form action="http://localhost:3000/api" method="post">
+<h1>{{accion}} Producto</h1>
+<form action="{{url}}/api/{{_id}}"> {{!-- Este comment no lo ves --}}
 
 	<label for="nombre">Ingrese nombre:</label>
-	<input class="form-control" type="text" name="nombre" placeholder="Ej: Jugo de Uva">
+	<input class="form-control" type="text" name="nombre" placeholder="Ej: Jugo de Uva" value="{{nombre}}">
 	
 	<br>
 
 	<label for="stock">Ingrese Stock:</label>
-	<input class="form-control" type="number" name="stock" placeholder="Ej: 9999">
+	<input class="form-control" type="number" name="stock" placeholder="Ej: 9999" value="{{stock}}">
 
 	<br>
 
 	<label for="precio">Ingrese Precio:</label>
-	<input class="form-control" type="number" name="precio" placeholder="Ej: 1999.99">
+	<input class="form-control" type="number" name="precio" placeholder="Ej: 1999.99" value="{{precio}}">
 
 	<br>
 
@@ -27,10 +27,31 @@
 	<br>
 
 	<label for="detalle">Ingrese un detalle:</label>
-	<textarea class="form-control" name="detalle" cols="30" rows="10" placeholder="Max: 100 caracteres"></textarea>
+	<textarea class="form-control" name="detalle" cols="30" rows="10" placeholder="Max: 100 caracteres">{{detalle}}</textarea>
 
 	<br>
 
 	<input class="btn btn-primary" type="submit" value="Agregar">
 
 </form>
+<script>
+	document.querySelector("form").onsubmit = async function(e){
+		e.preventDefault()
+		
+		const datos = Object.fromEntries( new FormData(e.target) )
+
+		const configs = {
+			method : "{{metodo}}", {{!-- POST o PUT --}}
+			body : JSON.stringify(datos),
+			header : {
+				"Content-Type" : "application/json"
+			}
+		}
+
+		const request = await fetch( e.target.action, configs )
+		const response = await request.json()
+		const message = response.rta ? "ok" : "fail"
+
+		window.location = "{{url}}/admin?msg=" + message
+	}
+</script>
