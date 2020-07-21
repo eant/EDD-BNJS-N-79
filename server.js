@@ -52,6 +52,12 @@ const verifyToken = (req, res, next) => {
 
 // Inicio Rutas del Dashboard //
 server.get("/admin", verifyToken, async (req, res) => {
+
+    const msg = req.query.msg
+
+    const msgStyle = msg == "ok" ? "alert-success" : "alert-danger"
+    const msgText = msg == "ok" ? "Operación realizada correctamente!" : "La operación no pudo completarse..."
+
     const DB = await connectDB()
 
     const productos = await DB.collection('Productos')
@@ -59,7 +65,10 @@ server.get("/admin", verifyToken, async (req, res) => {
 
     res.render("panel", {
         url : base_url(req), //<-- http://localhost:3000
-        items : resultado
+        items : resultado,
+        msg,
+        msgStyle,
+        msgText
     }) 
 
 })
