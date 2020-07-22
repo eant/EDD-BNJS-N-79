@@ -31,21 +31,38 @@
 
 	<br>
 
+	<label for="imagen">Elija una imagen:</label>
+	<input type="file" class="form-control-file" name="imagen">
+
+	<br>
+
 	<input class="btn btn-primary" type="submit" value="Agregar">
 
 </form>
 <script>
+
+	//AJAX PARA ENVIAR SOLAMENTE LA IMAGEN
+	/*
+	document.querySelector('input[type="file"]').onchange = async function(e){
+		const img = e.target.files
+		const datos = new FormData()
+		datos.append("imagen", img[0])
+
+		const request = await fetch("{{url}}/api/{{_id}}", { method : "POST", body : datos })
+		const response = await request.json()
+
+		console.log( response )
+	}
+	*/
+
 	document.querySelector("form").onsubmit = async function(e){
 		e.preventDefault()
 		
-		const datos = Object.fromEntries( new FormData(e.target) )
+		const datos = new FormData( e.target )
 
 		const configs = {
 			method : "{{metodo}}", {{!-- POST o PUT --}}
-			body : JSON.stringify(datos),
-			headers : {
-				"Content-Type" : "application/json"
-			}
+			body : datos
 		}
 
 		const request = await fetch( e.target.action, configs )
