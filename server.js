@@ -1,7 +1,7 @@
-const express = require('express')
-const hbs = require('express-handlebars')
-const { MongoClient } = require('mongodb')
-const { ObjectId } = require('mongodb')
+import express from 'express'
+import hbs from 'express-handlebars'
+import { MongoClient } from 'mongodb'
+import  { ObjectId } from 'mongodb'
 const jwt = require("jsonwebtoken")
 const cookieParser = require("cookie-parser")
 const expressFileupload = require("express-fileupload")
@@ -9,7 +9,7 @@ const server = express()
 
 const urlencoded = express.urlencoded({ extended : true })
 const json = express.json()
-const public = express.static(__dirname + "/public")
+const staticDir = express.static(__dirname + "/public")
 const cookies = cookieParser()
 const fileUpload = expressFileupload()
 
@@ -35,7 +35,7 @@ server.use( fileUpload )
 server.set("view engine", "handlebars")
 server.engine("handlebars", hbs() )
 
-server.use("/", public )
+server.use("/", staticDir )
 server.listen(port)
 
 const verifyToken = (req, res, next) => {
