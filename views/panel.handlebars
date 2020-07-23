@@ -11,7 +11,7 @@
 <table class="table">
   <thead>
     <tr class="text-center">
-      <th width="5%">ID</th>
+      <th width="5%">IMAGEN</th>
       <th width="20%">NOMBRE</th>
       <th width="20%">STOCK</th>
       <th width="20%">PRECIO</th>
@@ -22,7 +22,13 @@
     {{#each items}}
     <!-- INICIO PRODUCTO -->
     <tr class="text-center">
-      <td>{{this._id}}</td>
+      <td>
+        {{#if this.imagen}}
+        <img src="{{url}}/productos/{{this.imagen}}" width="100">
+        {{else}}
+        <img src="{{url}}/img/no-image.png" width="100">
+        {{/if}}
+      </td>
       <td>{{this.nombre}}</td>
       <td>{{this.stock}} unid.</td>
       <td>${{this.precio}}</td>

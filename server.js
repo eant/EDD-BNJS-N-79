@@ -80,8 +80,7 @@ server.get("/admin/nuevo", verifyToken, (req, res) => {
     res.render("formulario", {
         url : base_url(req),
         accion : "Nuevo",
-        metodo : "POST",
-        _id : "upload"
+        metodo : "POST"
     })
 })
 
@@ -136,11 +135,24 @@ server.post("/api", async (req, res) => { //<-- Crear con datos
         - Irrepetible
         - Autoasignable
     */
-    const datos = req.body //<--- { nombre: "Cafe", stock: "700", precio: "85.75", disponible: "true" }
+    const imagen = req.files.imagen
+    const datos = req.body
+    
     const DB = await connectDB()
     const productos = await DB.collection("Productos")
 
-    const { result } = await productos.insertOne( datos )
+    const producto = { ...datos, imagen : imagen.name }   //<--- { nombre: "iPhone X", stock: "700", precio: "985.75", marca: "Apple", detalle : "lalalall", imagen : "iphone_x.jpg" }
+
+    const ubicacion = __dirname + "/public/productos/" + imagen.name
+
+    imagen.mv(ubicacion, error => {
+        if(error){
+            console.log("No se movio")
+            console.log(error)
+        }
+    })
+
+    const { result } = await productos.insertOne( producto )
 
     res.json({ rta : result.ok })  
 })
@@ -198,31 +210,4 @@ server.post("/login", (req, res) => {
         res.json({ rta : "Datos incorrectos" })
     }
 
-})
-
-/// ENDPOINT DE PRUEBA ///
-server.post("/api/upload", (req, res) => {
-
-    const imagen = req.files.imagen
-    const datos = req.body
-    
-    // C:\Users\EANT\Proyectos\EDD-BNJS-N-79\public\uploads\######.jpg
-    // /User/smessina/Proyectos/EANT/EDD-BNJS-N-79/public/uploads/####.jpg
-    // /home/user/Proyectos/EANT/EDD-BNJS-N-79/public/uploads/####.jpg
-    // /task/public/uploads/######.jpg
-
-    const path = __dirname + "/public/uploads/" + imagen.name
-
-    imagen.mv(path, error => {
-        if(error){
-            console.log("No se movio")
-            console.log(error)
-        }
-    })
-
-    console.log(`La imagen subida se llama: ${imagen.name}`)
-    console.log("Los datos subidos son:")
-    console.log( datos )
-
-    res.json({ rta : "mira la consola" })
 })
