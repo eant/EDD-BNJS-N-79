@@ -1,0 +1,7 @@
+npm install babel-cli babel-preset-es2015
+
+npm install babel-plugin-transform-object-rest-spread
+
+npm install react react-dom
+
+npm install babel-cli babel-preset-react

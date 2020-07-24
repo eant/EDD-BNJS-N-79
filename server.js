@@ -1,7 +1,7 @@
 import express from 'express'
 import hbs from 'express-handlebars'
-import { MongoClient } from 'mongodb'
-import  { ObjectId } from 'mongodb'
+const { MongoClient } = require('mongodb')
+const { ObjectId } = require('mongodb')
 const jwt = require("jsonwebtoken")
 const cookieParser = require("cookie-parser")
 const expressFileupload = require("express-fileupload")
